@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Syed Abid Ali | Azure & DevOps Engineer</title>
+  <meta name="description" content="Syed Abid Ali - Senior Azure & DevOps Engineer portfolio.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <a class="brand" href="#home">
+      <span class="brand-mark">SA</span>
+      <span>
+        <strong>Syed Abid Ali</strong>
+        <small>Azure & DevOps Engineer</small>
+      </span>
+    </a>
+    <nav>
+      <a class="active" href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#skills">Skills</a>
+      <a href="#projects">Projects</a>
+      <a href="#certifications">Certifications</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-btn" aria-label="Toggle theme" onclick="toggleTheme()">☾</button>
+  </header>
+
+  <main>
+    <section id="home" class="hero">
+      <div class="hero-photo">
+        <img src="images/abid-profile.jpg" alt="Syed Abid Ali">
+      </div>
+      <div class="hero-content">
+        <span class="eyebrow">☁ Azure & DevOps Engineer</span>
+        <h1>Syed Abid Ali</h1>
+        <h2>Senior Azure & DevOps Engineer</h2>
+        <p>
+          Results-driven IT professional with 13+ years of experience, including
+          6+ years specializing in Azure Cloud, DevOps, and Infrastructure Automation.
+          Passionate about building scalable, secure, and highly available cloud solutions.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="#" onclick="alert('Add your resume PDF link here.'); return false;">↓ &nbsp;Download Resume</a>
+          <a class="btn secondary" href="#contact">✈ &nbsp;Contact Me</a>
+        </div>
+        <div class="socials">
+          <a href="#" aria-label="LinkedIn">in</a>
+          <a href="#" aria-label="GitHub">GH</a>
+          <a href="mailto:your-email@example.com" aria-label="Email">✉</a>
+        </div>
+      </div>
+      <div class="hero-pattern"></div>
+    </section>
+
+    <section class="stats">
+      <div><span>💼</span><strong>13+</strong><small>Years of Experience</small></div>
+      <div><span>☁</span><strong>6+</strong><small>Years in Azure & DevOps</small></div>
+      <div><span>🚀</span><strong>4</strong><small>Projects Completed</small></div>
+      <div><span>🏅</span><strong>3</strong><small>Certifications</small></div>
+    </section>
+
+    <section id="about" class="section about">
+      <div class="section-title"><i></i><h3>About Me</h3></div>
+      <p>
+        Senior Azure & DevOps Engineer focused on Azure infrastructure, Terraform,
+        CI/CD automation, Linux administration, monitoring, backup and disaster recovery.
+        This demo portfolio is intentionally built with plain HTML, CSS and JavaScript
+        so it can be used as a simple CI/CD learning application without Docker.
+      </p>
+    </section>
+
+    <section id="skills" class="section">
+      <div class="section-title"><i></i><h3>Skills & Technologies</h3></div>
+      <div class="skills-grid">
+        <article class="card skill"><div class="icon azure">A</div><h4>Microsoft Azure</h4><p>Cloud Platform</p></article>
+        <article class="card skill"><div class="icon terraform">T</div><h4>Terraform</h4><p>IaC & Automation</p></article>
+        <article class="card skill"><div class="icon devops">◆</div><h4>Azure DevOps</h4><p>CI/CD, Pipelines, Boards</p></article>
+        <article class="card skill"><div class="icon github">GH</div><h4>GitHub</h4><p>Version Control</p></article>
+        <article class="card skill"><div class="icon actions">▶</div><h4>GitHub Actions</h4><p>CI/CD Automation</p></article>
+        <article class="card skill"><div class="icon linux">🐧</div><h4>Linux</h4><p>Administration</p></article>
+        <article class="card skill"><div class="icon docker">◆</div><h4>Docker</h4><p>Containerization</p></article>
+        <article class="card skill"><div class="icon monitor">▥</div><h4>Monitoring</h4><p>Azure Monitor, Grafana</p></article>
+      </div>
+    </section>
+
+    <section id="projects" class="section">
+      <div class="section-title"><i></i><h3>Projects Completed</h3><a href="#projects">View All Projects →</a></div>
+      <div class="projects-grid">
+        <article class="card project">
+          <div class="project-icon">☁</div><h4>Azure Landing Zone</h4>
+          <p>Implemented enterprise-scale landing zone using CAF, Terraform, and Azure best practices.</p>
+          <div class="tags"><span>Azure</span><span>Terraform</span><span>Networking</span></div>
+        </article>
+        <article class="card project">
+          <div class="project-icon">🚀</div><h4>CI/CD Automation</h4>
+          <p>Built end-to-end CI/CD pipelines using Azure DevOps and GitHub Actions with security scanning and approvals.</p>
+          <div class="tags"><span>Azure DevOps</span><span>GitHub Actions</span><span>CI/CD</span></div>
+        </article>
+        <article class="card project">
+          <div class="project-icon">♻</div><h4>Cloud Backup & DR</h4>
+          <p>Designed and implemented DR using Azure Backup and Site Recovery with controlled failover and recovery testing.</p>
+          <div class="tags"><span>Azure Backup</span><span>ASR</span><span>DR</span></div>
+        </article>
+        <article class="card project">
+          <div class="project-icon">▥</div><h4>Monitoring & Alerting</h4>
+          <p>Implemented centralized monitoring, alerting and dashboards using Azure Monitor and Log Analytics.</p>
+          <div class="tags"><span>Azure Monitor</span><span>Grafana</span><span>Alerts</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section id="certifications" class="section">
+      <div class="section-title"><i></i><h3>Certifications</h3></div>
+      <div class="cert-grid">
+        <article class="card cert"><div class="cert-badge">AZ<br><small>ADMIN</small></div><div><small>Microsoft Certified</small><h4>Azure Administrator Associate</h4><p>AZ-104</p></div><span class="verify">Valid</span></article>
+        <article class="card cert"><div class="cert-badge">DEV<br><small>OPS</small></div><div><small>Microsoft Certified</small><h4>DevOps Engineer Expert</h4><p>AZ-400</p></div><span class="verify">Valid</span></article>
+        <article class="card cert"><div class="cert-badge">AZ<br><small>ARCH</small></div><div><small>Microsoft Certified</small><h4>Azure Solutions Architect Expert</h4><p>AZ-305</p></div><span class="verify">Valid</span></article>
+      </div>
+    </section>
+
+    <section id="contact" class="section contact">
+      <div>
+        <span class="eyebrow">✈ Let's work together</span>
+        <h3>Have a project or opportunity?</h3>
+        <p>I'm always open to discussing new opportunities and interesting cloud & DevOps projects.</p>
+      </div>
+      <div class="contact-info">
+        <a href="mailto:your-email@example.com">✉ your-email@example.com</a>
+        <span>☎ +91 XXXXX XXXXX</span>
+        <span>⌖ Kolkata, India</span>
+      </div>
+    </section>
+  </main>
+
+  <footer>© 2026 Syed Abid Ali. All rights reserved.</footer>
+  <script src="script.js"></script>
+</body>
+</html>
