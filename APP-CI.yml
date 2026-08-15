@@ -13,7 +13,15 @@ pool:
 
 steps:
 
+# --------------------------------------------------
+# 1. Checkout Source Code
+# --------------------------------------------------
+
 - checkout: self
+
+# --------------------------------------------------
+# 2. Display Build Information
+# --------------------------------------------------
 
 - script: |
     echo "================================="
@@ -25,6 +33,10 @@ steps:
     echo "Build ID: $(Build.BuildId)"
   displayName: 'Display Build Information'
 
+# --------------------------------------------------
+# 3. Validate Application
+# --------------------------------------------------
+
 - script: |
     echo "Validating application files..."
 
@@ -32,5 +44,50 @@ steps:
     test -f style.css
     test -f script.js
 
-    echo "Application files validation successful."
+    echo "Application validation successful."
   displayName: 'Validate Application Files'
+
+# --------------------------------------------------
+# 4. Create Application Package
+# --------------------------------------------------
+
+- script: |
+    echo "Creating application package..."
+
+    mkdir -p $(Build.ArtifactStagingDirectory)/portfolio-app
+
+    cp index.html $(Build.ArtifactStagingDirectory)/portfolio-app/
+    cp style.css $(Build.ArtifactStagingDirectory)/portfolio-app/
+    cp script.js $(Build.ArtifactStagingDirectory)/portfolio-app/
+
+    if [ -d "images" ]; then
+      cp -r images $(Build.ArtifactStagingDirectory)/portfolio-app/
+    fi
+
+    echo "Application package created."
+    ls -la $(Build.ArtifactStagingDirectory)/portfolio-app
+  displayName: 'Package Application'
+
+# --------------------------------------------------
+# 5. Create ZIP
+# --------------------------------------------------
+
+- script: |
+    cd $(Build.ArtifactStagingDirectory)
+
+    zip -r portfolio-app.zip portfolio-app
+
+    echo "Created artifact:"
+    ls -lh portfolio-app.zip
+  displayName: 'Create Application ZIP'
+
+# --------------------------------------------------
+# 6. Publish Artifact
+# --------------------------------------------------
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/portfolio-app.zip'
+    artifact: 'portfolio-app'
+    publishLocation: 'pipeline'
+  displayName: 'Publish Application Artifact'
