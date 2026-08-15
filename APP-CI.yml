@@ -1,0 +1,36 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- checkout: self
+
+- script: |
+    echo "================================="
+    echo "CI Pipeline Started"
+    echo "================================="
+    echo "Repository: $(Build.Repository.Name)"
+    echo "Branch: $(Build.SourceBranch)"
+    echo "Commit: $(Build.SourceVersion)"
+    echo "Build ID: $(Build.BuildId)"
+  displayName: 'Display Build Information'
+
+- script: |
+    echo "Validating application files..."
+
+    test -f index.html
+    test -f style.css
+    test -f script.js
+
+    echo "Application files validation successful."
+  displayName: 'Validate Application Files'
