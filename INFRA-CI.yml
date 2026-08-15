@@ -89,8 +89,39 @@ steps:
 # --------------------------------------------------
 # 7. Terraform Plan
 # --------------------------------------------------
+- task: AzureCLI@2
+  displayName: 'Terraform Init Validate Plan'
+  inputs:
+    azureSubscription: 'sc-azure-terraform'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
 
-- script: |
-    cd infrastructure/dev
-    terraform plan
-  displayName: 'Terraform Plan'
+      echo "========================================="
+      echo "Azure Authentication"
+      echo "========================================="
+
+      az account show
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Init"
+      echo "========================================="
+
+      cd infrastructure/dev
+
+      terraform init -backend=false
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Validate"
+      echo "========================================="
+
+      terraform validate
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Plan"
+      echo "========================================="
+
+      terraform plan
