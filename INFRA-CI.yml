@@ -53,49 +53,44 @@ steps:
 
     sudo mv terraform /usr/local/bin/terraform
 
+    echo ""
+    echo "Terraform Version:"
     terraform version
   displayName: 'Install Terraform'
+
 
 # --------------------------------------------------
 # 4. Terraform Format Check
 # --------------------------------------------------
 
 - script: |
+    set -e
+
     cd infrastructure/dev
+
+    echo "========================================="
+    echo "Terraform Format Check"
+    echo "========================================="
+
     terraform fmt -check -recursive
   displayName: 'Terraform Format Check'
 
 
 # --------------------------------------------------
-# 5. Terraform Init
+# 5. Azure Authentication + Terraform Init
+#    + Validate + Plan
 # --------------------------------------------------
 
-- script: |
-    cd infrastructure/dev
-    terraform init
-  displayName: 'Terraform Init'
-
-
-# --------------------------------------------------
-# 6. Terraform Validate
-# --------------------------------------------------
-
-- script: |
-    cd infrastructure/dev
-    terraform validate
-  displayName: 'Terraform Validate'
-
-
-# --------------------------------------------------
-# 7. Terraform Plan
-# --------------------------------------------------
 - task: AzureCLI@2
   displayName: 'Terraform Init Validate Plan'
   inputs:
     azureSubscription: 'sc-azure-terraform'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
+
     inlineScript: |
+
+      set -e
 
       echo "========================================="
       echo "Azure Authentication"
@@ -105,12 +100,21 @@ steps:
 
       echo ""
       echo "========================================="
-      echo "Terraform Init"
+      echo "Azure Subscription"
+      echo "========================================="
+
+      az account show \
+        --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
+        --output table
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Init - Remote Backend"
       echo "========================================="
 
       cd infrastructure/dev
 
-      terraform init -backend=false
+      terraform init
 
       echo ""
       echo "========================================="
@@ -125,3 +129,8 @@ steps:
       echo "========================================="
 
       terraform plan
+
+      echo ""
+      echo "========================================="
+      echo "INFRA-CI Pipeline Completed Successfully"
+      echo "========================================="
