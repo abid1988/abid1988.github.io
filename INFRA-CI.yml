@@ -1,0 +1,136 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+# --------------------------------------------------
+# 1. Checkout Source Code
+# --------------------------------------------------
+
+- checkout: self
+  displayName: 'Checkout Source Code'
+
+
+# --------------------------------------------------
+# 2. Display Build Information
+# --------------------------------------------------
+
+- script: |
+    echo "========================================="
+    echo "INFRA-CI Pipeline Started"
+    echo "========================================="
+    echo "Repository: $(Build.Repository.Name)"
+    echo "Branch: $(Build.SourceBranch)"
+    echo "Commit: $(Build.SourceVersion)"
+    echo "Build ID: $(Build.BuildId)"
+  displayName: 'Display Build Information'
+
+
+# --------------------------------------------------
+# 3. Install Terraform
+# --------------------------------------------------
+
+- script: |
+    set -e
+
+    TERRAFORM_VERSION="1.15.6"
+
+    echo "Installing Terraform ${TERRAFORM_VERSION}..."
+
+    wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+    unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+    sudo mv terraform /usr/local/bin/terraform
+
+    echo ""
+    echo "Terraform Version:"
+    terraform version
+  displayName: 'Install Terraform'
+
+
+# --------------------------------------------------
+# 4. Terraform Format Check
+# --------------------------------------------------
+
+- script: |
+    set -e
+
+    cd infrastructure/dev
+
+    echo "========================================="
+    echo "Terraform Format Check"
+    echo "========================================="
+
+    terraform fmt -check -recursive
+  displayName: 'Terraform Format Check'
+
+
+# --------------------------------------------------
+# 5. Azure Authentication + Terraform Init
+#    + Validate + Plan
+# --------------------------------------------------
+
+- task: AzureCLI@2
+  displayName: 'Terraform Init Validate Plan'
+  inputs:
+    azureSubscription: 'sc-azure-terraform'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+
+    inlineScript: |
+
+      set -e
+
+      echo "========================================="
+      echo "Azure Authentication"
+      echo "========================================="
+
+      az account show
+
+      echo ""
+      echo "========================================="
+      echo "Azure Subscription"
+      echo "========================================="
+
+      az account show \
+        --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
+        --output table
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Init - Remote Backend"
+      echo "========================================="
+
+      cd infrastructure/dev
+
+      terraform init
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Validate"
+      echo "========================================="
+
+      terraform validate
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Plan"
+      echo "========================================="
+
+      terraform plan
+
+      echo ""
+      echo "========================================="
+      echo "INFRA-CI Pipeline Completed Successfully"
+      echo "========================================="
