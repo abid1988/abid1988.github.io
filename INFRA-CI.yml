@@ -84,7 +84,7 @@ steps:
 - task: AzureCLI@2
   displayName: 'Terraform Init Validate Plan'
   inputs:
-    azureSubscription: 'sc-azure-terraform'
+    azureSubscription: 'ado-svc'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
 
