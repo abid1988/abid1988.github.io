@@ -84,7 +84,7 @@ steps:
 - task: AzureCLI@2
   displayName: 'Terraform Init Validate Plan'
   inputs:
-    azureSubscription: 'sc-azure-terraform'
+    azureSubscription: 'ado-svc'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
 
@@ -128,9 +128,20 @@ steps:
       echo "Terraform Plan"
       echo "========================================="
 
-      terraform plan
+      terraform plan -out=tfplan
 
       echo ""
       echo "========================================="
       echo "INFRA-CI Pipeline Completed Successfully"
       echo "========================================="
+
+      # --------------------------------------------------
+# 6. Publish Terraform Plan Artifact
+# --------------------------------------------------
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Publish Terraform Plan Artifact'
+  inputs:
+    targetPath: 'infrastructure/dev/tfplan'
+    artifact: 'terraform-plan'
+    publishLocation: 'pipeline'

@@ -1,0 +1,107 @@
+trigger: none
+
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: infraCI
+      source: INFRA-CI
+      trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+# --------------------------------------------------
+# 1. Checkout Source Code
+# --------------------------------------------------
+
+- checkout: self
+  displayName: 'Checkout Source Code'
+
+
+# --------------------------------------------------
+# 2. Install Terraform
+# --------------------------------------------------
+
+- script: |
+    set -e
+
+    TERRAFORM_VERSION="1.15.6"
+
+    echo "Installing Terraform ${TERRAFORM_VERSION}..."
+
+    wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+    unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+    sudo mv terraform /usr/local/bin/terraform
+
+    terraform version
+  displayName: 'Install Terraform'
+
+
+# --------------------------------------------------
+# 3. Download Terraform Plan Artifact
+# --------------------------------------------------
+
+- download: infraCI
+  artifact: terraform-plan
+  displayName: 'Download Terraform Plan Artifact'
+
+
+# --------------------------------------------------
+# 4. Inspect Downloaded Artifact
+# --------------------------------------------------
+
+- script: |
+    echo "Pipeline workspace:"
+    ls -la $(Pipeline.Workspace)
+
+    echo ""
+    echo "Terraform plan artifact:"
+    ls -la $(Pipeline.Workspace)/infraCI/terraform-plan
+  displayName: 'Inspect Terraform Plan Artifact'
+
+
+# --------------------------------------------------
+# 5. Terraform Apply - DEV
+# --------------------------------------------------
+
+- task: AzureCLI@2
+  displayName: 'Terraform Apply - DEV'
+  inputs:
+    azureSubscription: 'ado-svc'
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+
+      set -e
+
+      echo "========================================="
+      echo "Azure Authentication"
+      echo "========================================="
+
+      az account show
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Init"
+      echo "========================================="
+
+      cd infrastructure/dev
+
+      terraform init
+
+      echo ""
+      echo "========================================="
+      echo "Terraform Apply"
+      echo "========================================="
+
+      terraform apply -auto-approve $(Pipeline.Workspace)/infraCI/terraform-plan/tfplan
+
+      echo ""
+      echo "========================================="
+      echo "DEV Infrastructure Deployment Completed"
+      echo "========================================="
