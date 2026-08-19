@@ -5,7 +5,7 @@ pr: none
 resources:
   pipelines:
     - pipeline: infraCI
-      source: INFRA-CI.yml
+      source: INFRA-CI
       trigger: none
 
 pool:
