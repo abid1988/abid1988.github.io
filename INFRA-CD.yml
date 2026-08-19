@@ -5,7 +5,7 @@ pr: none
 resources:
   pipelines:
     - pipeline: infraCI
-      source: INFRA-CI
+      source: 'abid1988.syed.github.io'
       trigger: none
 
 pool:
