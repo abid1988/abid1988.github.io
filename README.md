@@ -1,61 +1,32 @@
 <div align="center">
 
-  <!-- Animated Header Banner -->
-  <img
-    src="https://capsule-render.vercel.app/api?type=waving&amp;color=0:0078D4,100:5E26D9&amp;height=220&amp;section=header&amp;text=Syed%20Abid%20Ali&amp;fontSize=50&amp;fontColor=ffffff&amp;animation=fadeIn&amp;fontAlignY=38&amp;desc=Senior%20Azure%20%26%20DevOps%20Engineer&amp;descFontSize=20&amp;descAlignY=62"
-    width="100%"
-    alt="Syed Abid Ali Header Banner"
-  />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0078D4,100:5E26D9&height=220&section=header&text=Syed%20Abid%20Ali&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Senior%20Azure%20DevOps%20Engineer&descFontSize=20&descAlignY=62" width="100%" alt="Syed Abid Ali Header Banner">
 
-  <!-- Profile Image -->
-  <img
-    src="./images/abid-profile.jpg"
-    width="180"
-    alt="Syed Abid Ali Profile Photo"
-  />
+<br>
 
-  <br/><br/>
+<img src="./images/abid-profile.jpg" width="180" alt="Syed Abid Ali Profile Photo">
 
-  <!-- Animated Typing Subheader -->
-  <a href="https://git.io/typing-svg">
-    <img
-      src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=600&amp;size=22&amp;pause=1000&amp;color=0078D4&amp;center=true&amp;vCenter=true&amp;width=700&amp;lines=13%2B+Years+of+IT+Excellence;6%2B+Years+Specializing+in+Azure+%26+DevOps;Infrastructure+as+Code+%28Terraform%29+Expert;Azure+Cloud+%26+DevOps+Engineer"
-      alt="Typing SVG"
-    />
-  </a>
+<br><br>
 
-  <br/><br/>
+<a href="https://git.io/typing-svg">
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=0078D4&center=true&vCenter=true&width=700&lines=13%2B+Years+of+IT+Excellence;6%2B+Years+in+Azure+and+DevOps;Infrastructure+as+Code+Terraform+Expert;Azure+Cloud+and+DevOps+Engineer" alt="Typing SVG">
+</a>
 
-  <!-- Quick Links and Contact Badges -->
-  <p align="center">
+<br><br>
 
-    <a href="https://abid1988.github.io">
-      <img
-        src="https://img.shields.io/badge/Live_Portfolio-abid1988.github.io-0078D4?style=for-the-badge&amp;logo=microsoftazure&amp;logoColor=white"
-        alt="Live Portfolio"
-      />
-    </a>
+<a href="https://abid1988.github.io">
+<img src="https://img.shields.io/badge/Live_Portfolio-abid1988.github.io-0078D4?style=for-the-badge&logo=microsoftazure&logoColor=white" alt="Live Portfolio">
+</a>
 
-    <a href="https://www.linkedin.com/in/syed-abid-ali/">
-      <img
-        src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&amp;logo=linkedin&amp;logoColor=white"
-        alt="LinkedIn"
-      />
-    </a>
+<a href="https://www.linkedin.com/in/syed-abid-ali/">
+<img src="https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn">
+</a>
 
-    <a href="mailto:abid.javi@gmail.com">
-      <img
-        src="https://img.shields.io/badge/Email-Contact_Me-D14836?style=for-the-badge&amp;logo=gmail&amp;logoColor=white"
-        alt="Email"
-      />
-    </a>
+<a href="mailto:abid.javi@gmail.com">
+<img src="https://img.shields.io/badge/Email-Contact_Me-D14836?style=for-the-badge&logo=gmail&logoColor=white" alt="Email">
+</a>
 
-    <img
-      src="https://img.shields.io/badge/Location-Kolkata%2C%20India-success?style=for-the-badge&amp;logo=googlemaps&amp;logoColor=white"
-      alt="Location"
-    />
-
-  </p>
+<img src="https://img.shields.io/badge/Location-Kolkata%2C%20India-28A745?style=for-the-badge&logo=googlemaps&logoColor=white" alt="Location">
 
 </div>
 
