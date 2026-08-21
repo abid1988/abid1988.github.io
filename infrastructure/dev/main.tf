@@ -14,11 +14,11 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "app" {
-  name     = "rg-syed-portfolio-dev"
-  location = "Central India"
+  name     = "rg-syed-portfolio-${var.environment}"
+  location = var.location
 
   tags = {
-    Environment = "dev"
+    Environment = var.environment
     Application = "syed-portfolio"
     ManagedBy   = "Terraform"
   }
