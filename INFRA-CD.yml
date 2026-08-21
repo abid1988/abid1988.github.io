@@ -5,7 +5,7 @@ pr: none
 resources:
   pipelines:
     - pipeline: infraCI
-      source: 'abid1988.syed.github.io'
+      source: 'Terraform-Infrastructure-CI'
       trigger: none
 
 pool:
