@@ -8,140 +8,344 @@ pr:
     include:
       - main
 
-pool:
-  vmImage: ubuntu-latest
+# ==================================================
+# DEV PLAN
+# ==================================================
 
-steps:
+stages:
 
-# --------------------------------------------------
-# 1. Checkout Source Code
-# --------------------------------------------------
+- stage: DEV_PLAN
+  displayName: 'DEV - Terraform Plan'
 
-- checkout: self
-  displayName: 'Checkout Source Code'
+  jobs:
+  - job: DevTerraformPlan
+    displayName: 'DEV Terraform Validation and Plan'
 
+    pool:
+      vmImage: ubuntu-latest
 
-# --------------------------------------------------
-# 2. Display Build Information
-# --------------------------------------------------
+    steps:
 
-- script: |
-    echo "========================================="
-    echo "INFRA-CI Pipeline Started"
-    echo "========================================="
-    echo "Repository: $(Build.Repository.Name)"
-    echo "Branch: $(Build.SourceBranch)"
-    echo "Commit: $(Build.SourceVersion)"
-    echo "Build ID: $(Build.BuildId)"
-  displayName: 'Display Build Information'
+    # --------------------------------------------------
+    # Checkout
+    # --------------------------------------------------
+
+    - checkout: self
+      displayName: 'Checkout Source Code'
 
 
-# --------------------------------------------------
-# 3. Install Terraform
-# --------------------------------------------------
+    # --------------------------------------------------
+    # Build Information
+    # --------------------------------------------------
 
-- script: |
-    set -e
-
-    TERRAFORM_VERSION="1.15.6"
-
-    echo "Installing Terraform ${TERRAFORM_VERSION}..."
-
-    wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-    unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-    sudo mv terraform /usr/local/bin/terraform
-
-    echo ""
-    echo "Terraform Version:"
-    terraform version
-  displayName: 'Install Terraform'
+    - script: |
+        echo "========================================="
+        echo "DEV Terraform CI"
+        echo "========================================="
+        echo "Repository: $(Build.Repository.Name)"
+        echo "Branch: $(Build.SourceBranch)"
+        echo "Commit: $(Build.SourceVersion)"
+        echo "Build ID: $(Build.BuildId)"
+      displayName: 'Display Build Information'
 
 
-# --------------------------------------------------
-# 4. Terraform Format Check
-# --------------------------------------------------
+    # --------------------------------------------------
+    # Install Terraform
+    # --------------------------------------------------
 
-- script: |
-    set -e
+    - script: |
+        set -e
 
-    cd infrastructure/dev
+        TERRAFORM_VERSION="1.15.6"
 
-    echo "========================================="
-    echo "Terraform Format Check"
-    echo "========================================="
+        echo "Installing Terraform ${TERRAFORM_VERSION}..."
 
-    terraform fmt -check -recursive
-  displayName: 'Terraform Format Check'
+        wget -q \
+          https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        sudo mv terraform /usr/local/bin/terraform
+
+        terraform version
+      displayName: 'Install Terraform'
 
 
-# --------------------------------------------------
-# 5. Azure Authentication + Terraform Init
-#    + Validate + Plan
-# --------------------------------------------------
+    # --------------------------------------------------
+    # Format Check
+    # --------------------------------------------------
 
-- task: AzureCLI@2
-  displayName: 'Terraform Init Validate Plan'
-  inputs:
-    azureSubscription: 'ado-svc'
-    scriptType: 'bash'
-    scriptLocation: 'inlineScript'
+    - script: |
+        cd infrastructure/dev
+        terraform fmt -check
+      displayName: 'Terraform Format Check - DEV'
 
-    inlineScript: |
 
-      set -e
+    # --------------------------------------------------
+    # Init + Validate + Plan
+    # --------------------------------------------------
 
-      echo "========================================="
-      echo "Azure Authentication"
-      echo "========================================="
+    - task: AzureCLI@2
+      displayName: 'Terraform Init Validate Plan - DEV'
 
-      az account show
+      inputs:
+        azureSubscription: 'ado-svc'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
 
-      echo ""
-      echo "========================================="
-      echo "Azure Subscription"
-      echo "========================================="
+        inlineScript: |
 
-      az account show \
-        --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
-        --output table
+          set -e
 
-      echo ""
-      echo "========================================="
-      echo "Terraform Init - Remote Backend"
-      echo "========================================="
+          echo "========================================="
+          echo "DEV - Azure Authentication"
+          echo "========================================="
 
-      cd infrastructure/dev
+          az account show \
+            --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
+            --output table
 
-      terraform init
+          cd infrastructure/dev
 
-      echo ""
-      echo "========================================="
-      echo "Terraform Validate"
-      echo "========================================="
+          echo ""
+          echo "========================================="
+          echo "DEV - Terraform Init"
+          echo "========================================="
 
-      terraform validate
+          terraform init
 
-      echo ""
-      echo "========================================="
-      echo "Terraform Plan"
-      echo "========================================="
+          echo ""
+          echo "========================================="
+          echo "DEV - Terraform Validate"
+          echo "========================================="
 
-      terraform plan -out=tfplan
+          terraform validate
 
-      echo ""
-      echo "========================================="
-      echo "INFRA-CI Pipeline Completed Successfully"
-      echo "========================================="
+          echo ""
+          echo "========================================="
+          echo "DEV - Terraform Plan"
+          echo "========================================="
 
-      # --------------------------------------------------
-# 6. Publish Terraform Plan Artifact
-# --------------------------------------------------
+          terraform plan -out=tfplan
 
-- task: PublishPipelineArtifact@1
-  displayName: 'Publish Terraform Plan Artifact'
-  inputs:
-    targetPath: 'infrastructure/dev/tfplan'
-    artifact: 'terraform-plan'
-    publishLocation: 'pipeline'
+          echo ""
+          echo "DEV Terraform plan created successfully."
+
+
+    # --------------------------------------------------
+    # Publish DEV Plan
+    # --------------------------------------------------
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish DEV Terraform Plan'
+
+      inputs:
+        targetPath: 'infrastructure/dev/tfplan'
+        artifact: 'terraform-plan-dev'
+        publishLocation: 'pipeline'
+
+
+# ==================================================
+# QA PLAN
+# ==================================================
+
+- stage: QA_PLAN
+  displayName: 'QA - Terraform Plan'
+
+  dependsOn: DEV_PLAN
+  condition: succeeded()
+
+  jobs:
+  - job: QaTerraformPlan
+    displayName: 'QA Terraform Validation and Plan'
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+    - checkout: self
+      displayName: 'Checkout Source Code'
+
+
+    - script: |
+        set -e
+
+        TERRAFORM_VERSION="1.15.6"
+
+        echo "Installing Terraform ${TERRAFORM_VERSION}..."
+
+        wget -q \
+          https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        sudo mv terraform /usr/local/bin/terraform
+
+        terraform version
+      displayName: 'Install Terraform'
+
+
+    - script: |
+        cd infrastructure/qa
+        terraform fmt -check
+      displayName: 'Terraform Format Check - QA'
+
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Init Validate Plan - QA'
+
+      inputs:
+        azureSubscription: 'ado-svc'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+
+        inlineScript: |
+
+          set -e
+
+          echo "========================================="
+          echo "QA - Azure Authentication"
+          echo "========================================="
+
+          az account show \
+            --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
+            --output table
+
+          cd infrastructure/qa
+
+          echo ""
+          echo "========================================="
+          echo "QA - Terraform Init"
+          echo "========================================="
+
+          terraform init
+
+          echo ""
+          echo "========================================="
+          echo "QA - Terraform Validate"
+          echo "========================================="
+
+          terraform validate
+
+          echo ""
+          echo "========================================="
+          echo "QA - Terraform Plan"
+          echo "========================================="
+
+          terraform plan -out=tfplan
+
+          echo ""
+          echo "QA Terraform plan created successfully."
+
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish QA Terraform Plan'
+
+      inputs:
+        targetPath: 'infrastructure/qa/tfplan'
+        artifact: 'terraform-plan-qa'
+        publishLocation: 'pipeline'
+
+
+# ==================================================
+# PROD PLAN
+# ==================================================
+
+- stage: PROD_PLAN
+  displayName: 'PROD - Terraform Plan'
+
+  dependsOn: QA_PLAN
+  condition: succeeded()
+
+  jobs:
+  - job: ProdTerraformPlan
+    displayName: 'PROD Terraform Validation and Plan'
+
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+
+    - checkout: self
+      displayName: 'Checkout Source Code'
+
+
+    - script: |
+        set -e
+
+        TERRAFORM_VERSION="1.15.6"
+
+        echo "Installing Terraform ${TERRAFORM_VERSION}..."
+
+        wget -q \
+          https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        unzip -o terraform_${TERRAFORM_VERSION}_linux_amd64.zip
+
+        sudo mv terraform /usr/local/bin/terraform
+
+        terraform version
+      displayName: 'Install Terraform'
+
+
+    - script: |
+        cd infrastructure/prod
+        terraform fmt -check
+      displayName: 'Terraform Format Check - PROD'
+
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Init Validate Plan - PROD'
+
+      inputs:
+        azureSubscription: 'ado-svc'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+
+        inlineScript: |
+
+          set -e
+
+          echo "========================================="
+          echo "PROD - Azure Authentication"
+          echo "========================================="
+
+          az account show \
+            --query "{Subscription:name, SubscriptionId:id, TenantId:tenantId}" \
+            --output table
+
+          cd infrastructure/prod
+
+          echo ""
+          echo "========================================="
+          echo "PROD - Terraform Init"
+          echo "========================================="
+
+          terraform init
+
+          echo ""
+          echo "========================================="
+          echo "PROD - Terraform Validate"
+          echo "========================================="
+
+          terraform validate
+
+          echo ""
+          echo "========================================="
+          echo "PROD - Terraform Plan"
+          echo "========================================="
+
+          terraform plan -out=tfplan
+
+          echo ""
+          echo "PROD Terraform plan created successfully."
+
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish PROD Terraform Plan'
+
+      inputs:
+        targetPath: 'infrastructure/prod/tfplan'
+        artifact: 'terraform-plan-prod'
+        publishLocation: 'pipeline'
