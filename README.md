@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./images/github-banner.JPG" width="100%" alt="Syed Abid Ali Azure Cloud and DevOps Banner">
+<img src="./images/github-banner.jpg" width="100%" alt="Syed Abid Ali Azure Cloud and DevOps Banner">
 
 <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=20&pause=1100&color=38BDF8&center=true&vCenter=true&width=760&lines=13%2B+Years+of+IT+Experience;6%2B+Years+in+Azure+Cloud+%26+DevOps;Terraform+%7C+IaC+%7C+CI%2FCD+Automation;Building+Secure%2C+Reliable+Cloud+Infrastructure" alt="Professional summary animation">
 
