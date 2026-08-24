@@ -4,7 +4,7 @@
 
 <br>
 
-<img src="./images/abid-profile.jpg" width="180" alt="Syed Abid Ali Profile Photo">
+<img src="./images/github-banner.jpg" width="100%" alt="Syed Abid Ali Azure Cloud and DevOps Banner">
 
 <br><br>
 
