@@ -1,10 +1,6 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0078D4,100:5E26D9&height=220&section=header&text=Syed%20Abid%20Ali&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Senior%20Azure%20DevOps%20Engineer&descFontSize=20&descAlignY=62" width="100%" alt="Syed Abid Ali Header Banner">
-
-<br>
-
-<img src="./images/github-banner.jpg" width="100%" alt="Syed Abid Ali Azure Cloud and DevOps Banner">
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0078D4,100:5E26D9&height=220&section=header&text=Syed%20Abid%20Ali&fontSize=50&fontColor=ffffff&animation=fadeIn&fontAlignY=38&desc=Senior%20Azure%20DevOps%20Engineer&descFontSize=20&descAlignY=62" width="100%" alt="Syed Abid Ali Header Banner"><img src="./images/github-banner.jpg" width="100%" alt="Syed Abid Ali Azure Cloud and DevOps Banner">
 
 <br><br>
 
