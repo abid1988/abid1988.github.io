@@ -50,22 +50,34 @@ stages:
     - script: |
         echo "Validating DEV application..."
 
-        URL="https://abid.b18g78.online"
+        URL="https://app-syed-portfolio-dev-bhdpfyfybrfza4fr.centralindia-01.azurewebsites.net"
 
         for i in {1..10}; do
-          HTTP_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" "$URL")
 
-          echo "Attempt $i - HTTP Status: $HTTP_STATUS"
+          echo "Health check attempt $i..."
+
+          HTTP_STATUS=$(curl \
+            --location \
+            --silent \
+            --show-error \
+            --connect-timeout 10 \
+            --max-time 20 \
+            --output /dev/null \
+            --write-out "%{http_code}" \
+            "$URL" || true)
+
+          echo "HTTP Status: $HTTP_STATUS"
 
           if [ "$HTTP_STATUS" = "200" ]; then
             echo "DEV application is healthy."
             exit 0
           fi
 
-          echo "Application not ready yet. Retrying in 15 seconds..."
+          echo "Application not ready. Retrying in 15 seconds..."
           sleep 15
         done
 
-        echo "DEV application health validation failed after multiple attempts."
+        echo "DEV application health validation failed."
         exit 1
+
       displayName: Validate DEV Deployment
