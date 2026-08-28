@@ -46,3 +46,19 @@ stages:
             --type zip
 
           echo "DEV deployment completed."
+
+    - script: |
+        echo "Validating DEV application..."
+
+        HTTP_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" \
+          https://abid.b18g78.online)
+
+        echo "HTTP Status: $HTTP_STATUS"
+
+        if [ "$HTTP_STATUS" != "200" ]; then
+          echo "DEV application health validation failed."
+          exit 1
+        fi
+
+        echo "DEV application is healthy."
+      displayName: Validate DEV Deployment
