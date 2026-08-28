@@ -38,3 +38,104 @@ footer{text-align:center;padding:25px;color:#66758a;font-size:12px;border-top:1p
 .light{--bg:#f5f8fc;--panel:#fff;--panel2:#fff;--border:#d9e2ee;--text:#152235;--muted:#5d6b7d}.light body{background:#f5f8fc}
 @media(max-width:1000px){nav{gap:15px}.skills-grid{grid-template-columns:repeat(4,1fr)}.projects-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.navbar{padding:0 18px}.navbar nav{display:none}.hero{grid-template-columns:1fr;padding:35px 6%;text-align:center}.hero-photo{margin:auto;width:260px;height:260px}h1{font-size:42px}.actions,.socials{justify-content:center}.stats{grid-template-columns:repeat(2,1fr)}.skills-grid{grid-template-columns:repeat(2,1fr)}.projects-grid,.cert-grid{grid-template-columns:1fr}.contact{margin-left:4%;margin-right:4%;flex-direction:column}}
+
+
+/* ==================================================
+   SKILL LOGOS
+================================================== */
+
+.skill .icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill .icon img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  display: block;
+}
+
+.skill .icon.emoji {
+  font-size: 38px;
+  line-height: 1;
+}
+
+
+/* ==================================================
+   CERTIFICATION LOGOS
+================================================== */
+
+.cert-badge {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cert-badge img {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  display: block;
+}
+
+
+/* ==================================================
+   CERTIFICATION STATUS
+================================================== */
+
+.cert .verify {
+  margin-left: auto;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* Completed certification */
+.cert .verify.completed {
+  color: #22c55e;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+/* Certification in progress */
+.cert .verify.progress {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+
+/* ==================================================
+   MOBILE CERTIFICATION ALIGNMENT
+================================================== */
+
+@media (max-width: 480px) {
+  .cert {
+    align-items: flex-start;
+  }
+
+  .cert .verify {
+    padding: 5px 9px;
+    font-size: 10px;
+  }
+
+  .cert-badge {
+    width: 54px;
+    height: 54px;
+  }
+
+  .cert-badge img {
+    width: 44px;
+    height: 44px;
+  }
+}
