@@ -1,0 +1,14 @@
+  feature/add-infra-cd[m
+  feature/add-multi-environment-infra[m
+  feature/add-terraform-infrastructure[m
+  feature/add-terraform-plan-artifact[m
+  feature/app-verify[m
+  feature/application-cd[m
+  feature/application-ci[m
+  feature/banner-image-path-correction[m
+  feature/multi-env-infra-cd[m
+  feature/multi-env-infra-ci[m
+  feature/update-cd-pipeline-reference[m
+  main[m
+* [32mpost-verify[m
+  profile_update[m
