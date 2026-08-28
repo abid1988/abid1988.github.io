@@ -50,15 +50,22 @@ stages:
     - script: |
         echo "Validating DEV application..."
 
-        HTTP_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" \
-          https://abid.b18g78.online)
+        URL="https://abid.b18g78.online"
 
-        echo "HTTP Status: $HTTP_STATUS"
+        for i in {1..10}; do
+          HTTP_STATUS=$(curl -L -s -o /dev/null -w "%{http_code}" "$URL")
 
-        if [ "$HTTP_STATUS" != "200" ]; then
-          echo "DEV application health validation failed."
-          exit 1
-        fi
+          echo "Attempt $i - HTTP Status: $HTTP_STATUS"
 
-        echo "DEV application is healthy."
+          if [ "$HTTP_STATUS" = "200" ]; then
+            echo "DEV application is healthy."
+            exit 0
+          fi
+
+          echo "Application not ready yet. Retrying in 15 seconds..."
+          sleep 15
+        done
+
+        echo "DEV application health validation failed after multiple attempts."
+        exit 1
       displayName: Validate DEV Deployment
