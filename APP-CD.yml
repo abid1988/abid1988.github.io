@@ -1,0 +1,48 @@
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+    - pipeline: appCI
+      source: Application-CI
+      trigger:
+        branches:
+          include:
+            - main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+
+- stage: DEV_DEPLOY
+  displayName: Deploy Application to DEV
+
+  jobs:
+
+  - job: DeployDev
+    displayName: Deploy Portfolio to DEV Web App
+
+    steps:
+
+    - checkout: self
+
+    - download: appCI
+      artifact: portfolio-app
+
+    - task: AzureCLI@2
+      displayName: Deploy Application ZIP to DEV
+      inputs:
+        azureSubscription: 'ado-svc'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "Deploying portfolio application to DEV..."
+
+          az webapp deploy \
+            --resource-group rg-syed-portfolio-dev \
+            --name app-syed-portfolio-dev \
+            --src-path "$(Pipeline.Workspace)/appCI/portfolio-app/portfolio-app.zip" \
+            --type zip
+
+          echo "DEV deployment completed."
