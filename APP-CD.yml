@@ -82,7 +82,8 @@ stages:
 
       displayName: Validate DEV Deployment
 
-  - stage: QA_DEPLOY
+
+- stage: QA_DEPLOY
   displayName: Deploy Application to QA
   dependsOn: DEV_DEPLOY
 
