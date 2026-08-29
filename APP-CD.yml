@@ -150,3 +150,76 @@ stages:
         exit 1
 
       displayName: Validate QA Deployment
+
+- stage: PROD_DEPLOY
+  displayName: Deploy Application to PROD
+  dependsOn: QA_DEPLOY
+
+  jobs:
+
+  - deployment: DeployProd
+    displayName: Deploy Portfolio to PROD Web App
+    environment: PROD-APP
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+
+          - checkout: self
+
+          - download: appCI
+            artifact: portfolio-app
+
+          - task: AzureCLI@2
+            displayName: Deploy Application ZIP to PROD
+            inputs:
+              azureSubscription: 'ado-svc'
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                echo "Deploying portfolio application to PROD..."
+
+                az webapp deploy \
+                  --resource-group rg-syed-portfolio-prod \
+                  --name app-syed-portfolio-prod \
+                  --src-path "$(Pipeline.Workspace)/appCI/portfolio-app/portfolio-app.zip" \
+                  --type zip
+
+                echo "PROD deployment completed."
+
+          - script: |
+              echo "Validating PROD application..."
+
+              URL="https://app-syed-portfolio-prod-g2byb2c4bwaxbbak.centralindia-01.azurewebsites.net"
+
+              for i in {1..10}; do
+
+                echo "Health check attempt $i..."
+
+                HTTP_STATUS=$(curl \
+                  --location \
+                  --silent \
+                  --show-error \
+                  --connect-timeout 10 \
+                  --max-time 20 \
+                  --output /dev/null \
+                  --write-out "%{http_code}" \
+                  "$URL" || true)
+
+                echo "HTTP Status: $HTTP_STATUS"
+
+                if [ "$HTTP_STATUS" = "200" ]; then
+                  echo "PROD application is healthy."
+                  exit 0
+                fi
+
+                echo "Application not ready. Retrying in 15 seconds..."
+                sleep 15
+              done
+
+              echo "PROD application health validation failed."
+              exit 1
+
+            displayName: Validate PROD Deployment
