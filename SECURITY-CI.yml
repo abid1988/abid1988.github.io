@@ -158,3 +158,32 @@ steps:
     Write-Host "Checkov security validation passed for all environments."
 
   displayName: Checkov Terraform Security Scan
+
+# =========================================================
+# Infracost - Terraform Cost and FinOps Analysis
+# =========================================================
+
+- powershell: |
+    Write-Host "===== INFRACOST COST AND FINOPS ANALYSIS ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running Infracost scan for $env environment..."
+
+      infracost scan "infrastructure/$env" --org abid-devops
+
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Infracost scan failed for $env environment."
+        exit $LASTEXITCODE
+      }
+
+      Write-Host "Infracost scan completed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "Infracost analysis completed for all environments."
+
+  displayName: Infracost Cost and FinOps Analysis
