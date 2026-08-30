@@ -73,7 +73,7 @@ steps:
     Write-Host "===== GITLEAKS SECRET SCAN ====="
     Write-Host "Scanning Git repository and history for secrets..."
 
-    gitleaks git . --redact --verbose
+    gitleaks git . --config .gitleaks.toml --redact --verbose
 
     if ($LASTEXITCODE -ne 0) {
       Write-Host "Gitleaks detected potential secrets."

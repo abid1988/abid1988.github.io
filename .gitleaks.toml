@@ -1,0 +1,5 @@
+[[rules]]
+id = "demo-security-gate"
+description = "Demo rule for testing PR security gate"
+regex = '''SECURITY_TEST_SECRET\s*=\s*DEVSECOPS-DEMO-[0-9]+'''
+tags = ["demo", "test"]
