@@ -1,20 +1,30 @@
 trigger: none
 pr: none
 
+# =========================================================
+# Rollback Parameters
+# =========================================================
+
 parameters:
 
 - name: buildId
   displayName: Application-CI Build ID to Rollback
   type: string
-  default: ''
+  default: '86'
+
+
+# =========================================================
+# Self-Hosted Windows Agent
+# =========================================================
 
 pool:
   name: ADO-Agent
 
+
 steps:
 
 # =========================================================
-# Validate Rollback Input
+# Validate Rollback Request
 # =========================================================
 
 - powershell: |
@@ -27,11 +37,13 @@ steps:
       exit 1
     }
 
+    Write-Host "Rollback request validated successfully."
+
   displayName: Validate Rollback Request
 
 
 # =========================================================
-# Download Last Known Good Artifact
+# Download Previous Application Artifact
 # =========================================================
 
 - task: DownloadPipelineArtifact@2
@@ -47,6 +59,30 @@ steps:
 
 
 # =========================================================
+# Verify Downloaded Rollback Artifact
+# =========================================================
+
+- powershell: |
+    Write-Host "===== VERIFY ROLLBACK ARTIFACT ====="
+
+    $artifactPath = "$(Pipeline.Workspace)\rollback\portfolio-app.zip"
+
+    Write-Host "Expected artifact:"
+    Write-Host $artifactPath
+
+    if (-not (Test-Path $artifactPath)) {
+      Write-Error "Rollback artifact portfolio-app.zip was not found."
+      exit 1
+    }
+
+    Write-Host "Rollback artifact successfully downloaded."
+
+    Get-Item $artifactPath | Format-List Name, Length, LastWriteTime
+
+  displayName: Verify Rollback Artifact
+
+
+# =========================================================
 # Deploy Previous Artifact to DEV
 # =========================================================
 
@@ -57,16 +93,15 @@ steps:
     scriptType: ps
     scriptLocation: inlineScript
     inlineScript: |
-      Write-Host "Deploying previous application artifact to DEV..."
+      Write-Host "===== DEV APPLICATION ROLLBACK ====="
 
       $artifactPath = "$(Pipeline.Workspace)\rollback\portfolio-app.zip"
 
-      Write-Host "Artifact Path: $artifactPath"
+      Write-Host "Deploying Application-CI Build ID:"
+      Write-Host "${{ parameters.buildId }}"
 
-      if (-not (Test-Path $artifactPath)) {
-        Write-Error "Rollback artifact not found."
-        exit 1
-      }
+      Write-Host "Artifact:"
+      Write-Host $artifactPath
 
       az webapp deploy `
         --resource-group rg-syed-portfolio-dev `
@@ -79,19 +114,24 @@ steps:
         exit $LASTEXITCODE
       }
 
-      Write-Host "Rollback deployment completed."
+      Write-Host "Previous application artifact successfully deployed to DEV."
+
 
 # =========================================================
 # Post-Rollback Health Validation
 # =========================================================
 
 - powershell: |
-    Write-Host "===== POST-ROLLBACK VALIDATION ====="
+    Write-Host "===== POST-ROLLBACK HEALTH VALIDATION ====="
 
     $url = "https://app-syed-portfolio-dev-bhdpfyfybrfza4fr.centralindia-01.azurewebsites.net"
 
+    Write-Host "Health Check URL:"
+    Write-Host $url
+
     for ($i = 1; $i -le 10; $i++) {
 
+      Write-Host ""
       Write-Host "Health check attempt $i..."
 
       try {
@@ -107,20 +147,25 @@ steps:
       catch {
 
         $httpStatus = 0
+        Write-Host "Application is not ready yet."
       }
 
       Write-Host "HTTP Status: $httpStatus"
 
       if ($httpStatus -eq 200) {
 
-        Write-Host "Rollback successful."
-        Write-Host "DEV application is healthy."
+        Write-Host ""
+        Write-Host "=========================================="
+        Write-Host "APPLICATION ROLLBACK SUCCESSFUL"
+        Write-Host "Build ID    : ${{ parameters.buildId }}"
+        Write-Host "Environment : DEV"
+        Write-Host "HTTP Status : 200"
+        Write-Host "=========================================="
 
         exit 0
       }
 
-      Write-Host "Application not ready. Retrying in 15 seconds..."
-
+      Write-Host "Retrying in 15 seconds..."
       Start-Sleep -Seconds 15
     }
 
