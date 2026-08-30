@@ -1,0 +1,50 @@
+trigger: none
+pr: none
+
+pool:
+  name: ADO-Agent
+
+steps:
+
+- checkout: self
+
+- powershell: |
+    Write-Host "===== SELF-HOSTED AGENT INFORMATION ====="
+    Write-Host "Agent Name     : $(Agent.Name)"
+    Write-Host "Agent Machine  : $(Agent.MachineName)"
+    Write-Host "Agent OS       : $(Agent.OS)"
+    Write-Host "Agent Version  : $(Agent.Version)"
+    Write-Host "Working Dir    : $(Agent.WorkFolder)"
+
+    Write-Host ""
+    Write-Host "===== INSTALLED TOOLS ====="
+
+    Write-Host ""
+    Write-Host "--- Git ---"
+    git --version
+
+    Write-Host ""
+    Write-Host "--- Terraform ---"
+    terraform version
+
+    Write-Host ""
+    Write-Host "--- Gitleaks ---"
+    gitleaks version
+
+    Write-Host ""
+    Write-Host "--- TFLint ---"
+    tflint --version
+
+    Write-Host ""
+    Write-Host "--- Checkov ---"
+    checkov --version
+
+    Write-Host ""
+    Write-Host "--- Infracost ---"
+    infracost --version
+
+    Write-Host ""
+    Write-Host "--- PowerShell ---"
+    $PSVersionTable.PSVersion
+
+  displayName: Verify Self-Hosted Agent and DevSecOps Tools
