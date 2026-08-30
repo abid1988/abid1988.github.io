@@ -1,0 +1,130 @@
+trigger: none
+pr: none
+
+parameters:
+
+- name: buildId
+  displayName: Application-CI Build ID to Rollback
+  type: string
+  default: ''
+
+pool:
+  name: ADO-Agent
+
+steps:
+
+# =========================================================
+# Validate Rollback Input
+# =========================================================
+
+- powershell: |
+    Write-Host "===== APPLICATION ROLLBACK ====="
+    Write-Host "Target Environment     : DEV"
+    Write-Host "Application-CI Build ID: ${{ parameters.buildId }}"
+
+    if ([string]::IsNullOrWhiteSpace("${{ parameters.buildId }}")) {
+      Write-Error "Application-CI Build ID is required."
+      exit 1
+    }
+
+  displayName: Validate Rollback Request
+
+
+# =========================================================
+# Download Last Known Good Artifact
+# =========================================================
+
+- task: DownloadPipelineArtifact@2
+  displayName: Download Previous Application Artifact
+  inputs:
+    buildType: specific
+    project: '$(System.TeamProject)'
+    definition: 'Application-CI'
+    buildVersionToDownload: specific
+    pipelineId: '${{ parameters.buildId }}'
+    artifactName: 'portfolio-app'
+    targetPath: '$(Pipeline.Workspace)\rollback'
+
+
+# =========================================================
+# Deploy Previous Artifact to DEV
+# =========================================================
+
+- task: AzureCLI@2
+  displayName: Rollback Application in DEV
+  inputs:
+    azureSubscription: 'ado-svc'
+    scriptType: ps
+    scriptLocation: inlineScript
+    inlineScript: |
+      Write-Host "Deploying previous application artifact to DEV..."
+
+      $artifactPath = "$(Pipeline.Workspace)\rollback\portfolio-app.zip"
+
+      Write-Host "Artifact Path: $artifactPath"
+
+      if (-not (Test-Path $artifactPath)) {
+        Write-Error "Rollback artifact not found."
+        exit 1
+      }
+
+      az webapp deploy `
+        --resource-group rg-syed-portfolio-dev `
+        --name app-syed-portfolio-dev `
+        --src-path "$artifactPath" `
+        --type zip
+
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "DEV rollback deployment failed."
+        exit $LASTEXITCODE
+      }
+
+      Write-Host "Rollback deployment completed."
+
+# =========================================================
+# Post-Rollback Health Validation
+# =========================================================
+
+- powershell: |
+    Write-Host "===== POST-ROLLBACK VALIDATION ====="
+
+    $url = "https://app-syed-portfolio-dev-bhdpfyfybrfza4fr.centralindia-01.azurewebsites.net"
+
+    for ($i = 1; $i -le 10; $i++) {
+
+      Write-Host "Health check attempt $i..."
+
+      try {
+
+        $response = Invoke-WebRequest `
+          -Uri $url `
+          -UseBasicParsing `
+          -TimeoutSec 20
+
+        $httpStatus = $response.StatusCode
+
+      }
+      catch {
+
+        $httpStatus = 0
+      }
+
+      Write-Host "HTTP Status: $httpStatus"
+
+      if ($httpStatus -eq 200) {
+
+        Write-Host "Rollback successful."
+        Write-Host "DEV application is healthy."
+
+        exit 0
+      }
+
+      Write-Host "Application not ready. Retrying in 15 seconds..."
+
+      Start-Sleep -Seconds 15
+    }
+
+    Write-Error "Post-rollback health validation failed."
+    exit 1
+
+  displayName: Validate DEV After Rollback
