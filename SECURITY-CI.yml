@@ -6,7 +6,18 @@ pool:
 
 steps:
 
+# =========================================================
+# Checkout Repository
+# Full Git history is required for Gitleaks history scanning
+# =========================================================
+
 - checkout: self
+  fetchDepth: 0
+
+
+# =========================================================
+# Verify Self-Hosted Agent and Installed DevSecOps Tools
+# =========================================================
 
 - powershell: |
     Write-Host "===== SELF-HOSTED AGENT INFORMATION ====="
@@ -48,3 +59,131 @@ steps:
     $PSVersionTable.PSVersion
 
   displayName: Verify Self-Hosted Agent and DevSecOps Tools
+
+
+# =========================================================
+# Gitleaks - Secret Scanning
+# =========================================================
+
+- powershell: |
+    Write-Host "===== GITLEAKS SECRET SCAN ====="
+    Write-Host "Scanning Git repository and history for secrets..."
+
+    gitleaks git . --redact --verbose
+
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "Gitleaks detected potential secrets."
+      Write-Host "Security validation FAILED."
+      exit $LASTEXITCODE
+    }
+
+    Write-Host ""
+    Write-Host "Gitleaks scan completed successfully."
+    Write-Host "No secrets detected."
+
+  displayName: Gitleaks Secret Scan
+
+# =========================================================
+# TFLint - Terraform Linting
+# =========================================================
+
+- powershell: |
+    Write-Host "===== TFLINT TERRAFORM SCAN ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running TFLint for $env environment..."
+
+      Push-Location "infrastructure/$env"
+
+      tflint --init
+
+      if ($LASTEXITCODE -ne 0) {
+        Pop-Location
+        Write-Error "TFLint initialization failed for $env."
+        exit 1
+      }
+
+      tflint
+
+      if ($LASTEXITCODE -ne 0) {
+        Pop-Location
+        Write-Error "TFLint detected issues in $env environment."
+        exit 1
+      }
+
+      Pop-Location
+
+      Write-Host "TFLint passed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "TFLint validation passed for all environments."
+
+  displayName: TFLint Terraform Scan
+
+
+# =========================================================
+# Checkov - Terraform IaC Security Scanning
+# =========================================================
+
+- powershell: |
+    Write-Host "===== CHECKOV TERRAFORM SECURITY SCAN ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running Checkov for $env environment..."
+
+      checkov `
+        -d "infrastructure/$env" `
+        --framework terraform `
+        --compact `
+        --quiet
+
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Checkov detected security or compliance issues in $env environment."
+        exit $LASTEXITCODE
+      }
+
+      Write-Host "Checkov passed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "Checkov security validation passed for all environments."
+
+  displayName: Checkov Terraform Security Scan
+
+# =========================================================
+# Infracost - Terraform Cost and FinOps Analysis
+# =========================================================
+
+- powershell: |
+    Write-Host "===== INFRACOST COST AND FINOPS ANALYSIS ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running Infracost scan for $env environment..."
+
+      infracost scan "infrastructure/$env" --org abid-devops
+
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Infracost scan failed for $env environment."
+        exit $LASTEXITCODE
+      }
+
+      Write-Host "Infracost scan completed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "Infracost analysis completed for all environments."
+
+  displayName: Infracost Cost and FinOps Analysis
