@@ -19,9 +19,28 @@ steps:
     Write-Host ""
     Write-Host "===== INSTALLED TOOLS ====="
 
+    Write-Host ""
+    Write-Host "--- Git ---"
     git --version
 
+    Write-Host ""
+    Write-Host "--- Terraform ---"
     terraform version
 
+    Write-Host ""
+    Write-Host "--- Gitleaks ---"
+    gitleaks version
+
+    Write-Host ""
+    Write-Host "--- TFLint ---"
+    tflint --version
+
+    Write-Host ""
+    Write-Host "--- Infracost ---"
+    infracost --version
+
+    Write-Host ""
+    Write-Host "--- PowerShell ---"
     $PSVersionTable.PSVersion
-  displayName: Verify Self-Hosted Agent
+
+  displayName: Verify Self-Hosted Agent and DevSecOps Tools
