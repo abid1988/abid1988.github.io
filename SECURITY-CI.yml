@@ -82,3 +82,45 @@ steps:
     Write-Host "No secrets detected."
 
   displayName: Gitleaks Secret Scan
+
+# =========================================================
+# TFLint - Terraform Linting
+# =========================================================
+
+- powershell: |
+    Write-Host "===== TFLINT TERRAFORM SCAN ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running TFLint for $env environment..."
+
+      Push-Location "infrastructure/$env"
+
+      tflint --init
+
+      if ($LASTEXITCODE -ne 0) {
+        Pop-Location
+        Write-Error "TFLint initialization failed for $env."
+        exit 1
+      }
+
+      tflint
+
+      if ($LASTEXITCODE -ne 0) {
+        Pop-Location
+        Write-Error "TFLint detected issues in $env environment."
+        exit 1
+      }
+
+      Pop-Location
+
+      Write-Host "TFLint passed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "TFLint validation passed for all environments."
+
+  displayName: TFLint Terraform Scan
