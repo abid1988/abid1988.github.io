@@ -1,5 +1,9 @@
 trigger: none
-pr: none
+
+pr:
+  branches:
+    include:
+      - main
 
 pool:
   name: ADO-Agent
