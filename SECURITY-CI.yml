@@ -6,7 +6,18 @@ pool:
 
 steps:
 
+# =========================================================
+# Checkout Repository
+# Full Git history is required for Gitleaks history scanning
+# =========================================================
+
 - checkout: self
+  fetchDepth: 0
+
+
+# =========================================================
+# Verify Self-Hosted Agent and Installed DevSecOps Tools
+# =========================================================
 
 - powershell: |
     Write-Host "===== SELF-HOSTED AGENT INFORMATION ====="
@@ -48,3 +59,26 @@ steps:
     $PSVersionTable.PSVersion
 
   displayName: Verify Self-Hosted Agent and DevSecOps Tools
+
+
+# =========================================================
+# Gitleaks - Secret Scanning
+# =========================================================
+
+- powershell: |
+    Write-Host "===== GITLEAKS SECRET SCAN ====="
+    Write-Host "Scanning Git repository and history for secrets..."
+
+    gitleaks git . --redact --verbose
+
+    if ($LASTEXITCODE -ne 0) {
+      Write-Host "Gitleaks detected potential secrets."
+      Write-Host "Security validation FAILED."
+      exit $LASTEXITCODE
+    }
+
+    Write-Host ""
+    Write-Host "Gitleaks scan completed successfully."
+    Write-Host "No secrets detected."
+
+  displayName: Gitleaks Secret Scan
