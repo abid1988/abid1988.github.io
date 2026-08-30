@@ -36,6 +36,10 @@ steps:
     tflint --version
 
     Write-Host ""
+    Write-Host "--- Checkov ---"
+    checkov --version
+
+    Write-Host ""
     Write-Host "--- Infracost ---"
     infracost --version
 
