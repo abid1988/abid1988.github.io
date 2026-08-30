@@ -124,3 +124,37 @@ steps:
     Write-Host "TFLint validation passed for all environments."
 
   displayName: TFLint Terraform Scan
+
+
+# =========================================================
+# Checkov - Terraform IaC Security Scanning
+# =========================================================
+
+- powershell: |
+    Write-Host "===== CHECKOV TERRAFORM SECURITY SCAN ====="
+
+    $environments = @("dev", "qa", "prod")
+
+    foreach ($env in $environments) {
+
+      Write-Host ""
+      Write-Host "Running Checkov for $env environment..."
+
+      checkov `
+        -d "infrastructure/$env" `
+        --framework terraform `
+        --compact `
+        --quiet
+
+      if ($LASTEXITCODE -ne 0) {
+        Write-Error "Checkov detected security or compliance issues in $env environment."
+        exit $LASTEXITCODE
+      }
+
+      Write-Host "Checkov passed for $env."
+    }
+
+    Write-Host ""
+    Write-Host "Checkov security validation passed for all environments."
+
+  displayName: Checkov Terraform Security Scan
