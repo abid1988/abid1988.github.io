@@ -1,0 +1,27 @@
+trigger: none
+pr: none
+
+pool:
+  name: ADO-Agent
+
+steps:
+
+- checkout: self
+
+- powershell: |
+    Write-Host "===== SELF-HOSTED AGENT INFORMATION ====="
+    Write-Host "Agent Name     : $(Agent.Name)"
+    Write-Host "Agent Machine  : $(Agent.MachineName)"
+    Write-Host "Agent OS       : $(Agent.OS)"
+    Write-Host "Agent Version  : $(Agent.Version)"
+    Write-Host "Working Dir    : $(Agent.WorkFolder)"
+
+    Write-Host ""
+    Write-Host "===== INSTALLED TOOLS ====="
+
+    git --version
+
+    terraform version
+
+    $PSVersionTable.PSVersion
+  displayName: Verify Self-Hosted Agent
